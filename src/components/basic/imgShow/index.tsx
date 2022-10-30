@@ -1,26 +1,28 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { fabric } from 'fabric';
+import { createImg, deleteImg, useWindowSize } from '../../../methods';
 
 export const  BasicImgShow= () => {
+  const {width,height} = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  };
   const canvasEl = useRef(null);
-  useEffect(() => {
+  useEffect(()=>{
+    // 获得画布对象
     const options = { };
     const canvas = new fabric.Canvas(canvasEl.current, options);
+    createImg(canvas);
+    setTimeout(()=>{
+      deleteImg(canvas)
+    },3000)
     // make the fabric.Canvas instance available to your app
-    const rect = new fabric.Rect({
-        top: 100,
-        left: 100,
-        width: 60,
-        height: 70,
-        fill: 'red',
-      });
-      canvas.add(rect)
     return () => {
       canvas.dispose();
     }
-  }, []);
-
-  return (<canvas width="300" height="300" ref={canvasEl}/>)
+  },[])
+ 
+  return (<canvas width={width} height={height} ref={canvasEl}/>)
 };
 
 

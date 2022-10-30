@@ -1,21 +1,14 @@
 import { useState } from "react";
-import { Router, Route, Link } from 'react-router-dom'
-import {Button} from 'react-dom';
-import reactLogo from "./assets/react.svg";
+// import {Button} from 'antd';
 import "./App.css";
+import { BasicImgShow } from "./components/basic/imgShow";
 
 
 function App() {
   const [count, setCount] = useState(0);
   return (
     <div className="App">
-      <Link to={{
-        pathname: '/components/board'
-      }}>
-        <Button>
-
-        </Button>
-      </Link>
+      <BasicImgShow></BasicImgShow>
     </div>
   );
 }
