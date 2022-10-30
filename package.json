@@ -11,7 +11,10 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "antd": "^4.23.6",
+    "axios": "^1.1.3",
     "eslint-plugin-prettier": "^4.2.1",
+    "express": "^4.18.2",
     "fabric": "^5.2.4",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
