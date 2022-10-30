@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { fabric } from 'fabric';
 
-export const FabricJSCanvas = () => {
+export const  BasicImgShow= () => {
   const canvasEl = useRef(null);
   useEffect(() => {
     const options = { };
