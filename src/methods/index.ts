@@ -2,12 +2,13 @@
 import { useState, useEffect } from 'react';
 import { fabric } from 'fabric';
 import { MutableRefObject } from 'react';
-
+import { IEvent } from 'fabric/fabric-impl';
 let isC = false;
 let location = {};
 let graphical: fabric.Object;
+let canvas: fabric.Canvas;
 
-const createRect_mousedown = function(e) {
+const createImg_mousedown:(e: IEvent<MouseEvent>) => void = function(e) {
     isC = true;
     location = {
       top:e.absolutePointer?.y,
@@ -15,27 +16,93 @@ const createRect_mousedown = function(e) {
     }
 };
 
-const createRect_mousemove = function(e) {
-    if(isC)
-    {
-      const newL: Location = {
-        top:e.absolutePointer?.y,
-        left:e.absolutePointer?.x
-      } as Location;
-      canvas.remove(graphical)
-      graphical = new fabric.Rect({
-        top: location.top,
-        left: location.left,
-        width:newL.left-location.left,
-        height: newL.top-location.top ,
-        fill:'white',
-        borderColor:'black'
-      })
-      canvas.add(graphical)
+const allCreateMethods:{
+    [index:string]:(e: IEvent<MouseEvent>) => void
+} = {
+    Rect:function(e){
+        if(isC)
+        {
+          const newL: Location = {
+            top:e.absolutePointer?.y,
+            left:e.absolutePointer?.x
+          } as Location;
+          canvas.remove(graphical)
+          graphical = new fabric.Rect({
+            top: location.top,
+            left: location.left,
+            width:newL.left-location.left,
+            height: newL.top-location.top ,
+            fill:'red'
+          })
+          canvas.add(graphical)
+        }
+    },
+    Circle:function(e){
+        if(isC)
+        {
+          const newL: Location = {
+            top:e.absolutePointer?.y,
+            left:e.absolutePointer?.x
+          } as Location;
+          const {width,height} = {
+            width:Math.abs(newL.left-location.left),
+            height: Math.abs(newL.top-location.top) ,
+          }
+          let circleData;
+          if(width>height)
+          {
+            circleData = {
+                radius:height/2,
+                scaleX:width/height
+            }
+          }
+          else
+          {
+            circleData = {
+                radius:width/2,
+                scaleY:height/width
+            }
+          }
+          canvas.remove(graphical)
+          graphical = new fabric.Circle({
+            top: Math.min(location.top,newL.top),
+            left: Math.min(location.left,newL.left),
+            fill:'red',
+            ...circleData
+          })
+          canvas.add(graphical)
+        }
+    },
+    Path:function(e){
+        if(isC)
+        {
+          const newL: Location = {
+            top:e.absolutePointer?.y,
+            left:e.absolutePointer?.x
+          } as Location;
+          canvas.remove(graphical)
+          graphical = new fabric.Path(``)
+          canvas.add(graphical)
+        }
+    },
+    Textbox:function(e){
+        console.log('textbos')
+        console.log( {
+            top:e.absolutePointer?.y,
+            left:e.absolutePointer?.x,
+            fill: 'black',
+            strokeWidth: 2
+        })
+        graphical = new fabric.Textbox('', {
+            top:e.absolutePointer?.y,
+            left:e.absolutePointer?.x,
+            fill: 'black',
+            strokeWidth: 2
+        });
+        canvas.add(graphical)
     }
-  }
-
-const createRect_mouseup = function(e) {
+}
+const createImg_mouseup:(e: IEvent<MouseEvent>) => void = function(e) {
     isC=false;
   } 
 
@@ -63,35 +130,29 @@ export const useWindowSize = () => {
   return windowSize;
 }
 
-export const createImg = function(canvas:fabric.Canvas){
-    // 先是矩形，后面加个字符串参数动态创建
-    graphical = new fabric.Rect({});
-    // 交互
-    canvas.on('mouse:down', createRect_mousedown);
-    canvas.on('mouse:move', function(e) {
-    if(isC)
+export const createImg = function(canvasFun:fabric.Canvas,methodType: string){
+    canvas = canvasFun;
+    // 动态初始化
+    switch(methodType)
     {
-        const newL: Location = {
-        top:e.absolutePointer?.y,
-        left:e.absolutePointer?.x
-        } as Location;
-        graphical = new fabric.Rect({
-        top: location.top,
-        left: location.left,
-        width:newL.left-location.left,
-        height: newL.top-location.top ,
-        fill:'red',
-        borderColor:'black'
-        })
-    }
-    }
-);
-    canvas.on('mouse:up', function(e) {
-    isC=false;
-    canvas.add(graphical)
-    } );
+        case 'Rect':
+            graphical = new fabric.Rect({});
+        case 'Circle':
+            graphical = new fabric.Circle({});
+        case 'Textbox':
+            graphical = new fabric.Text('');
+            canvas.on('mouse:down', allCreateMethods[methodType]);
+            return;
+    } 
+    // // 交互
+    canvas.on('mouse:down', createImg_mousedown);
+    canvas.on('mouse:move', allCreateMethods[methodType]);
+    canvas.on('mouse:up', createImg_mouseup);
 }
 
-export const deleteImg = function(canvas:fabric.Canvas){
-    canvas.off('mouse:down', createRect_mousedown);
+export const deleteImg = function(canvasFun:fabric.Canvas,methodType: string){
+    canvas = canvasFun;
+    canvas.on('mouse:down', createImg_mousedown);
+    canvas.on('mouse:move', allCreateMethods[methodType]);
+    canvas.on('mouse:up', createImg_mouseup);
 }
