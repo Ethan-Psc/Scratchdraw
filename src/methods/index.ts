@@ -8,7 +8,8 @@ let location = {};
 let graphical: fabric.Object;
 let canvas: fabric.Canvas;
 
-function makeCurveCircle(left, top, line1, line2, line3) {
+// 画曲线的两个端点
+function makeCurveCircle(left, top, line, centerSpot) {
   var c = new fabric.Circle({
     left: left,
     top: top,
@@ -19,14 +20,14 @@ function makeCurveCircle(left, top, line1, line2, line3) {
   });
   c.hasBorders = c.hasControls = false;
 
-  c.line1 = line1;
-  c.line2 = line2;
-  c.line3 = line3;
+  c.line = line
+  c.centerSpot = centerSpot;
 
   return c;
 }
 
-function makeCurvePoint(left, top, line1, line2, line3) {
+// 画曲线的中间点
+function makeCurvePoint(left, top, line) {
   var c = new fabric.Circle({
     left: left,
     top: top,
@@ -36,14 +37,12 @@ function makeCurvePoint(left, top, line1, line2, line3) {
     stroke: '#666'
   });
   c.hasBorders = c.hasControls = false;
-
-  c.line1 = line1;
-  c.line2 = line2;
-  c.line3 = line3;
+  c.line = line
 
   return c;
 }
 
+// 记录点击按下时的坐标，准备画图
 const createImg_mousedown: (e: IEvent<MouseEvent>) => void = function (e) {
   isC = true;
   location = {
@@ -52,71 +51,63 @@ const createImg_mousedown: (e: IEvent<MouseEvent>) => void = function (e) {
   }
 };
 
+// 当曲线两个端点被选中，则显示中间节点
 function onObjectSelected(e) {
   var activeObject = e.selected[0];
   if (activeObject.name == "p0" || activeObject.name == "p2") {
-    activeObject.line2.animate('opacity', '1', {
+    activeObject.centerSpot.animate('opacity', '1', {
       duration: 200,
       onChange: canvas.renderAll.bind(canvas),
     });
-    activeObject.line2.selectable = true;
+    activeObject.centerSpot.selectable = true;
+    activeObject.animate('opacity', '1', {
+      duration: 200,
+      onChange: canvas.renderAll.bind(canvas),
+    });
+    activeObject.selectable = true;
+    //之后用对象数组的形式存储每条曲线，三个节点，所以数组的结构写好后，下面这里要补充显示另外一个曲线端点的代码
+    // 修改该曲线的selected属性，代表它被选中了
+    activeObject.line.selected = true;
   }
 }
 
+// 失去焦点时隐藏曲线节点
 function onSelectionCleared(e) {
   var activeObject = e.deselected[0];
-  if (activeObject.name == "p0" || activeObject.name == "p2") {
-    activeObject.line2.animate('opacity', '0', {
-      duration: 200,
-      onChange: canvas.renderAll.bind(canvas),
-    });
-    activeObject.line2.selectable = false;
-  } else if (activeObject.name == "p1") {
+  if (activeObject.name) {
     activeObject.animate('opacity', '0', {
       duration: 200,
       onChange: canvas.renderAll.bind(canvas),
     });
     activeObject.selectable = false;
+    // 修改该曲线的selected属性，代表它被失去焦点了
+    activeObject.line.selected = false;
+  }
+  if (activeObject.name == "p0" || activeObject.name == "p2") {
+    activeObject.centerSpot.animate('opacity', '0', {
+      duration: 200,
+      onChange: canvas.renderAll.bind(canvas),
+    });
+    activeObject.centerSpot.selectable = false;
   }
 }
 
+// 移动两端的节点对象时，改变曲线
 function onObjectMoving(e) {
-  if (e.target.name == "p0" || e.target.name == "p2") {
-    var p = e.target;
-
-    if (p.line1) {
-      p.line1.path[0][1] = p.left;
-      p.line1.path[0][2] = p.top;
-    } else if (p.line3) {
-      p.line3.path[1][3] = p.left;
-      p.line3.path[1][4] = p.top;
+  let p = e.target;
+  if (p.name == "p0") {
+    p.line.path[0][1] = p.left;
+    p.line.path[0][2] = p.top;
+  }
+  else if (p.name == "p2") {
+    p.line.path[1][3] = p.left;
+    p.line.path[1][4] = p.top;
+  }
+  else if (p.name == "p1") {
+    if (p.line) {
+      p.line.path[1][1] = p.left;
+      p.line.path[1][2] = p.top;
     }
-  } else if (e.target.name == "p1") {
-    var p = e.target;
-
-    if (p.line2) {
-      p.line2.path[1][1] = p.left;
-      p.line2.path[1][2] = p.top;
-    }
-  } else if (e.target.name == "p0" || e.target.name == "p2") {
-    var p = e.target;
-
-    p.line1 && p.line1.set({
-      'x2': p.left,
-      'y2': p.top
-    });
-    p.line2 && p.line2.set({
-      'x1': p.left,
-      'y1': p.top
-    });
-    p.line3 && p.line3.set({
-      'x1': p.left,
-      'y1': p.top
-    });
-    p.line4 && p.line4.set({
-      'x1': p.left,
-      'y1': p.top
-    });
   }
 }
 
@@ -194,7 +185,7 @@ const allCreateMethods: {
         top: e.absolutePointer?.y,
         left: e.absolutePointer?.x
       } as Location;
-      
+
       const { width, height } = {
         width: Math.abs(newL.left - location.left),
         height: Math.abs(newL.top - location.top),
@@ -208,15 +199,13 @@ const allCreateMethods: {
       });
 
       graphical.path[0][1] = location.left;
-      graphical.path[0][2] = location.top+height/2;
+      graphical.path[0][2] = location.top + height / 2;
 
-      graphical.path[1][1] = (location.left+newL.left)/2;
-      graphical.path[1][2] = (location.top+newL.top)/2;
+      graphical.path[1][1] = (location.left + newL.left) / 2;
+      graphical.path[1][2] = (location.top + newL.top) / 2;
 
       graphical.path[1][3] = newL.left;
-      graphical.path[1][4] = newL.top-height/2;
-      graphical.lockRotation = true;
-      graphical.selectable = true;
+      graphical.path[1][4] = newL.top - height / 2;
       canvas.add(graphical);
     }
   }
@@ -226,7 +215,7 @@ const createImg_mouseup: (e: IEvent<MouseEvent>) => void = function (e) {
   isC = false;
 }
 
-const createImg_mouseup_curve: (e: IEvent<MouseEvent>) => void = function(e){
+const createImg_mouseup_curve: (e: IEvent<MouseEvent>) => void = function (e) {
   const newL: Location = {
     top: e.absolutePointer?.y,
     left: e.absolutePointer?.x
@@ -235,22 +224,24 @@ const createImg_mouseup_curve: (e: IEvent<MouseEvent>) => void = function(e){
     width: Math.abs(newL.left - location.left),
     height: Math.abs(newL.top - location.top),
   }
+  isC = false;
+
   fabric.Object.prototype.originX = fabric.Object.prototype.originY = 'center';
-  var p1 = makeCurvePoint((location.left+newL.left)/2, (location.top+newL.top)/2, null, graphical, null)
+  var p1 = makeCurvePoint((location.left + newL.left) / 2, (location.top + newL.top) / 2, graphical)
   p1.name = "p1";
   canvas.add(p1);
 
-  var p0 = makeCurveCircle(location.left, location.top+height/2, graphical, p1, null);
+  var p0 = makeCurveCircle(location.left, location.top + height / 2, graphical, p1);
   p0.name = "p0";
   canvas.add(p0);
 
-  var p2 = makeCurveCircle( newL.left,  newL.top-height/2, null, p1, graphical);
+  var p2 = makeCurveCircle(newL.left, newL.top - height / 2, graphical, p1);
   p2.name = "p2";
   canvas.add(p2);
   canvas.on('selection:created', onObjectSelected);
   canvas.on('object:moving', onObjectMoving);
   canvas.on('selection:cleared', onSelectionCleared);
-  isC = false;
+
 }
 
 export interface Location {
@@ -279,6 +270,29 @@ export const useWindowSize = () => {
 
 export const createImg = function (canvasFun: fabric.Canvas, methodType: string) {
   canvas = canvasFun;
+  // 只要花了图形，就一直监听，用来显示曲线的点
+  canvas.on('mouse:move', function (e) {
+    if (e.target?.name == "p0" || e.target?.name == "p2") {
+      if (!e.target?.line.selected) {
+        e.target?.animate('opacity', '1', {
+          duration: 200,
+          onChange: canvas.renderAll.bind(canvas),
+        });
+        e.target.selectable = true;
+      }
+    }
+  });
+  canvas.on('mouse:out', function (e) {
+    if (e.target?.name == "p0" || e.target?.name == "p2") {
+      if (!e.target?.line.selected) {
+        e.target?.animate('opacity', '0', {
+          duration: 200,
+          onChange: canvas.renderAll.bind(canvas),
+        });
+        e.target.selectable = false;
+      }
+    }
+  });
   // 动态初始化
   switch (methodType) {
     case 'Rect':
@@ -303,18 +317,18 @@ export const createImg = function (canvasFun: fabric.Canvas, methodType: string)
 
 export const deleteImg = function (canvasFun: fabric.Canvas, methodType: string) {
   canvas = canvasFun;
-    // 动态撤销事件
-    switch (methodType) {
-      case 'Textbox':
-        canvas.off('mouse:down', allCreateMethods[methodType]);
-      case 'Curve':
-        canvas.off('mouse:down', createImg_mousedown);
-        canvas.off('mouse:move', allCreateMethods[methodType]);
-        canvas.off('mouse:up', createImg_mouseup_curve);
-      default:
-        canvas.off('mouse:down', createImg_mousedown);
-        canvas.off('mouse:move', allCreateMethods[methodType]);
-        canvas.off('mouse:up', createImg_mouseup);
-    }
+  // 动态撤销事件
+  switch (methodType) {
+    case 'Textbox':
+      canvas.off('mouse:down', allCreateMethods[methodType]);
+    case 'Curve':
+      canvas.off('mouse:down', createImg_mousedown);
+      canvas.off('mouse:move', allCreateMethods[methodType]);
+      canvas.off('mouse:up', createImg_mouseup_curve);
+    default:
+      canvas.off('mouse:down', createImg_mousedown);
+      canvas.off('mouse:move', allCreateMethods[methodType]);
+      canvas.off('mouse:up', createImg_mouseup);
+  }
 
 }
