@@ -9,7 +9,7 @@ let graphical: fabric.Object;
 let canvas: fabric.Canvas;
 
 // 画曲线的两个端点
-function makeCurveCircle(left, top, line, centerSpot) {
+function makeCurveCircle(left:number, top:number, line:fabric.Path, centerSpot:fabric.Circle) {
   var c = new fabric.Circle({
     left: left,
     top: top,
@@ -27,7 +27,7 @@ function makeCurveCircle(left, top, line, centerSpot) {
 }
 
 // 画曲线的中间点
-function makeCurvePoint(left, top, line) {
+function makeCurvePoint(left:number, top:number, line:fabric.Path) {
   var c = new fabric.Circle({
     left: left,
     top: top,
@@ -43,7 +43,7 @@ function makeCurvePoint(left, top, line) {
 }
 
 // 记录点击按下时的坐标，准备画图
-const createImg_mousedown: (e: IEvent<MouseEvent>) => void = function (e) {
+const createImg_mousedown: (e: IEvent<Event>) => void = function (e: IEvent<Event>) {
   isC = true;
   location = {
     top: e.absolutePointer?.y,
@@ -52,8 +52,11 @@ const createImg_mousedown: (e: IEvent<MouseEvent>) => void = function (e) {
 };
 
 // 当曲线两个端点被选中，则显示中间节点
-function onObjectSelected(e) {
-  var activeObject = e.selected[0];
+function onObjectSelected(e: IEvent<Event>) {
+  var activeObject =  e.selected instanceof Array?e.selected[0]:null;
+  if(activeObject===null){
+    throw Error('object select error!')
+  }
   if (activeObject.name == "p0" || activeObject.name == "p2") {
     activeObject.centerSpot.animate('opacity', '1', {
       duration: 200,
@@ -72,7 +75,7 @@ function onObjectSelected(e) {
 }
 
 // 失去焦点时隐藏曲线节点
-function onSelectionCleared(e) {
+function onSelectionCleared(e: IEvent<Event>) {
   var activeObject = e.deselected[0];
   if (activeObject.name) {
     activeObject.animate('opacity', '0', {
@@ -93,8 +96,12 @@ function onSelectionCleared(e) {
 }
 
 // 移动两端的节点对象时，改变曲线
-function onObjectMoving(e) {
-  let p = e.target;
+function onObjectMoving(e: IEvent<Event>) {
+  let p = e.target?e.target:null;
+  if(p === null)
+  {
+    throw new Error('e is not defined!');
+  }
   if (p.name == "p0") {
     p.line.path[0][1] = p.left;
     p.line.path[0][2] = p.top;
@@ -112,9 +119,9 @@ function onObjectMoving(e) {
 }
 
 const allCreateMethods: {
-  [index: string]: (e: IEvent<MouseEvent>) => void
+  [index: string]: (e: IEvent<Event>) => void
 } = {
-  Rect: function (e) {
+  Rect: function (e: IEvent<Event>) {
     if (isC) {
       const newL: Location = {
         top: e.absolutePointer?.y,
@@ -131,7 +138,7 @@ const allCreateMethods: {
       canvas.add(graphical)
     }
   },
-  Circle: function (e) {
+  Circle: function (e: IEvent<Event>) {
     if (isC) {
       const newL: Location = {
         top: e.absolutePointer?.y,
@@ -164,7 +171,7 @@ const allCreateMethods: {
       canvas.add(graphical)
     }
   },
-  Textbox: function (e) {
+  Textbox: function (e: IEvent<Event>) {
     graphical = new fabric.Textbox('', {
       top: e.absolutePointer?.y,
       left: e.absolutePointer?.x,
@@ -175,11 +182,11 @@ const allCreateMethods: {
     // 动态修改内容
     // (graphical as fabric.Textbox).text = '1';
     // 设置oninput后就无法显示内容？？
-    // (graphical as fabric.Textbox).onInput = function(e){
+    // (graphical as fabric.Textbox).onInput = function(e: IEvent<Event>){
     //     console.log(e.data);
     // }
   },
-  Curve: function (e) {
+  Curve: function (e: IEvent<Event>) {
     if (isC) {
       const newL: Location = {
         top: e.absolutePointer?.y,
@@ -211,11 +218,11 @@ const allCreateMethods: {
   }
 }
 
-const createImg_mouseup: (e: IEvent<MouseEvent>) => void = function (e) {
+const createImg_mouseup: (e: IEvent<Event>) => void = function (e: IEvent<Event>) {
   isC = false;
 }
 
-const createImg_mouseup_curve: (e: IEvent<MouseEvent>) => void = function (e) {
+const createImg_mouseup_curve: (e: IEvent<Event>) => void = function (e: IEvent<Event>) {
   const newL: Location = {
     top: e.absolutePointer?.y,
     left: e.absolutePointer?.x
@@ -271,7 +278,7 @@ export const useWindowSize = () => {
 export const createImg = function (canvasFun: fabric.Canvas, methodType: string) {
   canvas = canvasFun;
   // 只要花了图形，就一直监听，用来显示曲线的点
-  canvas.on('mouse:move', function (e) {
+  canvas.on('mouse:move', function (e: IEvent<Event>) {
     if (e.target?.name == "p0" || e.target?.name == "p2") {
       if (!e.target?.line.selected) {
         e.target?.animate('opacity', '1', {
@@ -282,7 +289,7 @@ export const createImg = function (canvasFun: fabric.Canvas, methodType: string)
       }
     }
   });
-  canvas.on('mouse:out', function (e) {
+  canvas.on('mouse:out', function (e: IEvent<Event>) {
     if (e.target?.name == "p0" || e.target?.name == "p2") {
       if (!e.target?.line.selected) {
         e.target?.animate('opacity', '0', {
