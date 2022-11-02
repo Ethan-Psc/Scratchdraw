@@ -1,0 +1,150 @@
+
+@font-face {
+  font-family: "iconfont"; /* Project id 3738282 */
+  src: url('//at.alicdn.com/t/c/font_3738282_kqf9ycuupl.woff2?t=1667380198834') format('woff2'),
+       url('//at.alicdn.com/t/c/font_3738282_kqf9ycuupl.woff?t=1667380198834') format('woff'),
+       url('//at.alicdn.com/t/c/font_3738282_kqf9ycuupl.ttf?t=1667380198834') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 1.4rem;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  justify-content: center;
+  line-height: 2.8rem;
+}
+
+.icon-ziti:before {
+  content: "\e6db";
+}
+
+.icon-pen:before {
+  content: "\e615";
+}
+
+.icon-book-full:before {
+  content: "\e895";
+}
+
+.icon-shubiao:before {
+  content: "\eb9a";
+}
+
+.icon-lingxing:before {
+  content: "\e62d";
+}
+
+.icon-yuanjiao-rect:before {
+  content: "\e64e";
+}
+
+.icon-circle:before {
+  content: "\e64f";
+}
+
+.icon-suoding:before {
+  content: "\e600";
+}
+
+.icon-jiesuo:before {
+  content: "\e601";
+}
+
+.imgTab {
+  width: 100%;
+}
+
+.hover {
+  background-color: rgb(105, 101, 219);
+  color: rgb(255, 255, 255);
+}
+
+.active {
+  background-color: rgb(255, 255, 255);
+  color: rgb(105, 101, 219);
+  border-radius: 2.8rem;
+}
+
+.imgTab-list {
+  width: 28rem;
+  height: 2.8rem;
+  padding: 0.28rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.imgTab-list .left {
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 2.8em;
+  margin-right: 0.7rem;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 1%), 1px 1px 5px rgb(0 0 0 / 15%);
+}
+
+.imgTab-list .left:hover {
+  background-clip: content-box;
+  background-color: rgb(105, 101, 219);
+  color: rgb(255, 255, 255);
+}
+
+.imgTab-list .middle .list {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+  border-radius: 1em;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 1%), 1px 1px 5px rgb(0 0 0 / 15%);
+}
+
+.imgTab-list .middle .list li:first-child{
+  width: 2.8rem;
+  height: 2.8rem;
+  margin-left: 0.4rem
+}
+
+.imgTab-list .middle .list li{
+  width: 2.8rem;
+  height: 2.8rem;
+  margin-right: 0.4rem
+}
+
+.imgTab-list .middle .list span{
+  font-size: 0.7rem;
+  line-height: 3.5rem;
+}
+
+.imgTab-list .middle .list li:hover {
+  background-color: rgb(105, 101, 219);
+  color: rgb(255, 255, 255);
+  border-radius: 1rem;
+}
+
+/* .imgTab-list .middle .list li:first-child:hover {
+  background-color: rgb(105, 101, 219);
+  color: rgb(255, 255, 255);
+  border-radius: 1em 0 0 1em;
+}
+
+.imgTab-list .middle .list li:last-child:hover {
+  background-color: rgb(105, 101, 219);
+  color: rgb(255, 255, 255);
+  border-radius: 0 1em 1em 0;
+} */
+
+.imgTab-list .right {
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 2.8em;
+  margin-left: 0.7rem;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 1%), 1px 1px 5px rgb(0 0 0 / 15%);
+}
+
+.imgTab-list .right:hover {
+  background-color: rgb(105, 101, 219);
+  color: rgb(255, 255, 255);
+}

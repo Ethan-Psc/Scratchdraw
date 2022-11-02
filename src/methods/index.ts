@@ -1,19 +1,35 @@
 // An highlighted block
 import { useState, useEffect } from 'react';
 import { fabric } from 'fabric';
-import { MutableRefObject } from 'react';
 import { IEvent } from 'fabric/fabric-impl';
-let isC = false;
-let location = {};
+import { useSelector } from 'react-redux';
+import store from '../store';
+// 是否选中
+let isC: boolean = false;  
+// 当前光标位置
+let location: Location = {
+  top: 0,
+  left: 0
+};
+// 是否选中
+let method = store.getState().method;
+// 画布上的一个图形，全局声明
 let graphical: fabric.Object;
+// 画布，全局声明
 let canvas: fabric.Canvas;
-
+export const methodType = {
+  Circle: "Circle",
+  Rect: "Rect",
+  TextBox: "Textbox",
+  Cursor: "Cursor",
+};
 const createImg_mousedown:(e: IEvent<MouseEvent>) => void = function(e) {
     isC = true;
     location = {
       top:e.absolutePointer?.y,
       left:e.absolutePointer?.x
     }
+    console.log(store.getState().method);
 };
 
 const allCreateMethods:{
@@ -104,11 +120,12 @@ const allCreateMethods:{
 }
 const createImg_mouseup:(e: IEvent<MouseEvent>) => void = function(e) {
     isC=false;
+    method = methodType.Cursor;
   } 
 
 export interface Location{
-    top:number|undefined,
-    left:number|undefined
+    top: number,
+    left: number
 }
 export const useWindowSize = () => {
   // 第一步：声明能够体现视口大小变化的状态

@@ -30,7 +30,7 @@ export function UserList() {
     });
     useEffect(() => fetchUsers, []);
     return (
-        <div><Button value={}/>{error}{loading}{data}</div>
+        <div><Button value={data}/></div>
         
     )
 }
