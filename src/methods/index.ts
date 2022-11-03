@@ -110,6 +110,16 @@ function onSelectionCleared(e: IEvent<Event>) {
   })
 }
 
+// 改变焦点时隐藏上一个曲线节点
+function onSelectionUpdated(e: IEvent<Event>) {
+  if(e.deselected&&e.selected&& e.deselected[0].line!=e.selected[0].line)
+  {
+    onSelectionCleared(e);
+  onObjectSelected(e);
+  }
+  
+}
+
 // 移动两端的节点对象时，改变曲线
 function onObjectMoving(e: IEvent<Event>) {
   let p = e.target?e.target:null;
@@ -272,6 +282,7 @@ const createImg_mouseup_curve: (e: IEvent<Event>) => void = function (e: IEvent<
   canvas.on('selection:created', onObjectSelected);
   canvas.on('object:moving', onObjectMoving);
   canvas.on('selection:cleared', onSelectionCleared);
+  canvas.on('selection:updated',onSelectionUpdated)
 
 }
 
