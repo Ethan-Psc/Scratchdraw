@@ -48,7 +48,6 @@ export const imgTabReducer = (state: any, action: any) => {
   }
 };
 const store = createStore(imgTabReducer,state, composeHandler);
-store.subscribe(() => {
-  console.log(store.getState());
-});
+
+
 export default store;
