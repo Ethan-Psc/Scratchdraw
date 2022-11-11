@@ -159,8 +159,8 @@ const allCreateMethods: {
         top: location.top,
         left: location.left,
         width: newL.left - location.left,
-        height: newL.top - location.top,
-        fill: 'red'
+        height: newL.top - location.top
+
       })
       canvas.add(graphical)
     }

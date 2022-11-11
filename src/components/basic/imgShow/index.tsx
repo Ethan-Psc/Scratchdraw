@@ -12,10 +12,10 @@ export const  BasicImgShow= () => {
     // 获得画布对象
     const options = { };
     const canvas = new fabric.Canvas(canvasEl.current, options);
-    createImg(canvas,'Curve');
+    createImg(canvas,'Rect');
     // todo 三秒恢复默认状态
     setTimeout(()=>{
-      deleteImg(canvas,'Curve')
+      deleteImg(canvas,'Rect')
     },5000)
     // make the fabric.Canvas instance available to your app
     return () => {

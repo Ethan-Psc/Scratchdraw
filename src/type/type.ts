@@ -8,4 +8,4 @@ export interface CurveObject{
 export interface Location {
     top: number | undefined,
     left: number | undefined
-  }
+}
