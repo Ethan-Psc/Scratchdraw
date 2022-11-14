@@ -159,8 +159,11 @@ const allCreateMethods: {
         top: location.top,
         left: location.left,
         width: newL.left - location.left,
-        height: newL.top - location.top
-
+        height: newL.top - location.top,
+        fill:'rgba(255,255,255,0)',
+        stroke:'black',
+        strokeLineJoin:'miter',
+        strokeUniform:true
       })
       canvas.add(graphical)
     }
