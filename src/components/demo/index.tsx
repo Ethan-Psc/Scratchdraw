@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {Button} from 'antd';
+import { Button } from 'antd';
 import axios from 'axios';
 const useAsync = (asyncFunction: Function) => {
     const [error, setError] = useState('');
@@ -9,7 +9,7 @@ const useAsync = (asyncFunction: Function) => {
         setError('');
         setLoading(true);
         setData([]);
-        return asyncFunction().then((data: any)=> {
+        return asyncFunction().then((data: any) => {
             setLoading(false);
             setData(data);
         }).catch((e: any) => {
@@ -30,7 +30,9 @@ export function UserList() {
     });
     useEffect(() => fetchUsers, []);
     return (
-        <div><Button value={data}/></div>
-        
+        <div>
+            <Button value={data} />
+        </div>
+
     )
 }
