@@ -1,18 +1,17 @@
 import { fabric } from "fabric";
 import { IEvent } from "fabric/fabric-impl";
-import { Location } from "..";
+import { Location } from "../index";
 export function createRect(
   e: IEvent<Event>,
   canvas: fabric.Canvas,
-  graphical: fabric.Object
+  graphical: fabric.Object,
+  location: Location
 ) {
   const newL: Location = {
     top: e.absolutePointer?.y,
     left: e.absolutePointer?.x,
   } as Location;
-  console.log("~~~~~~~");
   canvas.remove(graphical);
-  console.log(canvas.remove);
   graphical = new fabric.Rect({
     top: location.top,
     left: location.left,
@@ -21,5 +20,4 @@ export function createRect(
     fill: "red",
   });
   canvas.add(graphical);
-  console.log(canvas.add);
 }

@@ -7,20 +7,20 @@ import { createCurve, createImg_mouseup_curve } from "./createMethods/curve";
 import { createTextbox } from "./createMethods/textbox";
 import { createTrap } from "./createMethods/trap";
 import { createRect } from "./createMethods/rect";
+
 // 是否选中
-let isC: boolean = false;
+var isC: boolean = false;
 // 当前光标位置
-let location: Location = {
+var location: Location = {
   top: 0,
   left: 0,
 };
-// 是否选中
-// let method = store.getState().method;
 // 画布上的一个图形，全局声明
-let graphical: fabric.Object;
+var graphical: fabric.Object;
 // 画布，全局声明
-let canvas: fabric.Canvas;
+var canvas: fabric.Canvas;
 // 位置接口
+
 export interface Location {
   top: number | undefined;
   left: number | undefined;
@@ -42,19 +42,19 @@ export const allCreateMethods: {
   [index: string]: (e: IEvent<Event>) => void;
 } = {
   Rect: function (e: IEvent<Event>) {
-    isC && createRect(e, canvas, graphical);
+    isC && createRect(e, canvas, graphical, location);
   },
   Circle: function (e: IEvent<Event>) {
-    isC && createCircle(e, canvas, graphical);
+    isC && createCircle(e, canvas, graphical, location);
   },
   Textbox: function (e: IEvent<Event>) {
     isC && createTextbox(e, canvas, graphical);
   },
   Trap: function (e: IEvent<Event>) {
-    isC && createTrap(e, canvas, graphical);
+    isC && createTrap(e, canvas, graphical, location);
   },
   Curve: function (e: IEvent<Event>) {
-    isC && createCurve(e, canvas, graphical);
+    isC && createCurve(e, canvas, graphical, location);
   },
   Cursor: function (e: IEvent<Event>) {
     isC = false;
@@ -109,6 +109,26 @@ const createImg_mouseup: (
         fill: "red",
         ...circleData,
       });
+      break;
+    case "Trap":
+      graphical = new fabric.Polygon([
+        {
+          x: (newL.left + location.left) / 2,
+          y: location.top,
+        },
+        {
+          x: newL.left,
+          y: (newL.top + location.top) / 2,
+        },
+        {
+          x: (newL.left + location.left) / 2,
+          y: newL.top,
+        },
+        {
+          x: location.left,
+          y: (newL.top + location.top) / 2,
+        },
+      ]);
       break;
     case "Textbox":
       graphical = new fabric.Textbox("", {
@@ -200,6 +220,9 @@ export const createImg = function (
     case "Circle":
       graphical = new fabric.Circle({});
       break;
+    case "Trap":
+      graphical = new fabric.Polygon([]);
+      break;
     case "Textbox":
       graphical = new fabric.Text("");
       canvas.on("mouse:down", allCreateMethods[methodType]);
@@ -207,7 +230,9 @@ export const createImg = function (
     case "Curve":
       canvas.on("mouse:down", createImg_mousedown);
       canvas.on("mouse:move", allCreateMethods[methodType]);
-      canvas.on("mouse:up", createImg_mouseup_curve);
+      canvas.on("mouse:up", (e, canvas, graphical, location) =>
+        createImg_mouseup_curve(e, canvas, graphical, location)
+      );
       return;
   }
   // 交互
@@ -218,8 +243,7 @@ export const createImg = function (
 
 export const deleteImg = function (
   canvasFun: fabric.Canvas,
-  methodType: string,
-  dispatch: Function
+  methodType: string
 ) {
   canvas = canvasFun;
   // 动态撤销事件
@@ -229,7 +253,7 @@ export const deleteImg = function (
     case "Curve":
       canvas.off("mouse:down", createImg_mousedown);
       canvas.off("mouse:move", allCreateMethods[methodType]);
-      canvas.off("mouse:up", createImg_mouseup_curve);
+      canvas.off("mouse:up");
     default:
       canvas.off("mouse:down", createImg_mousedown);
       canvas.off("mouse:move", allCreateMethods[methodType]);

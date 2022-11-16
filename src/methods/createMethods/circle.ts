@@ -1,11 +1,11 @@
 import { fabric } from "fabric";
 import { IEvent } from "fabric/fabric-impl";
-import { Location } from "..";
-
+import { Location } from "../index";
 export function createCircle(
   e: IEvent<Event>,
   canvas: fabric.Canvas,
-  graphical: fabric.Object
+  graphical: fabric.Object,
+  location: Location
 ) {
   const newL: Location = {
     top: e.absolutePointer?.y,

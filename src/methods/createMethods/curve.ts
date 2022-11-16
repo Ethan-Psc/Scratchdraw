@@ -1,9 +1,16 @@
-import { useState, useEffect } from "react";
 import { fabric } from "fabric";
 import { IEvent } from "fabric/fabric-impl";
 import { Location } from "../index";
-export const createImg_mouseup_curve: (e: IEvent<Event>) => void = function (
-  e: IEvent<Event>
+export const createImg_mouseup_curve: (
+  e: IEvent<Event>,
+  canvas: fabric.Canvas,
+  graphical: fabric.Object,
+  location: Location
+) => void = function (
+  e: IEvent<Event>,
+  canvas: fabric.Canvas,
+  graphical: fabric.Object,
+  location: Location
 ) {
   const newL: Location = {
     top: e.absolutePointer?.y,
@@ -39,6 +46,7 @@ export const createImg_mouseup_curve: (e: IEvent<Event>) => void = function (
   canvas.on("object:moving", onObjectMoving);
   canvas.on("selection:cleared", onSelectionCleared);
 };
+
 export function makeCurveCircle(left, top, line1, line2, line3) {
   var c = new fabric.Circle({
     left: left,
@@ -136,7 +144,8 @@ export function onObjectMoving(e: IEvent<Event>) {
 export function createCurve(
   e: IEvent<Event>,
   canvas: fabric.Canvas,
-  graphical: fabric.Object
+  graphical: fabric.Object,
+  location: Location
 ) {
   const newL: Location = {
     top: e.absolutePointer?.y,
