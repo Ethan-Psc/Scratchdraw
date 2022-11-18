@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState, memo } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { fabric } from 'fabric';
 import { createImg, deleteImg } from '../../../methods';

@@ -1,6 +1,6 @@
-import { fabric } from "fabric";
-import { IEvent } from "fabric/fabric-impl";
-import { Location } from "../index";
+import { fabric } from 'fabric';
+import { IEvent } from 'fabric/fabric-impl';
+import { Location } from '../index';
 export function createRect(
   e: IEvent<Event>,
   canvas: fabric.Canvas,
@@ -17,7 +17,7 @@ export function createRect(
     left: location.left,
     width: newL.left - location.left,
     height: newL.top - location.top,
-    fill: "red",
+    fill: 'red',
   });
   canvas.add(graphical);
 }

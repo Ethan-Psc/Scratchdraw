@@ -1,5 +1,3 @@
-import { useState } from "react";
-// import {Button} from 'antd';
 import "./App.css";
 import { BasicImgShow } from "./components/basic/imgShow";
 import { BasicImgTab } from './components/basic/imgTab';
@@ -15,5 +13,4 @@ function App() {
     </div>
   );
 }
-
 export default App;

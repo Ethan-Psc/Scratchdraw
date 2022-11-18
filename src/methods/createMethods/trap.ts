@@ -1,6 +1,6 @@
-import { fabric } from "fabric";
-import { IEvent } from "fabric/fabric-impl";
-import { Location } from "../index";
+import { fabric } from 'fabric';
+import { IEvent } from 'fabric/fabric-impl';
+import { Location } from '../index';
 export function createTrap(
   e: IEvent<Event>,
   canvas: fabric.Canvas,

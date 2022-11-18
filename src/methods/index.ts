@@ -1,12 +1,12 @@
 // An highlighted block
-import { useState, useEffect } from "react";
-import { fabric } from "fabric";
-import { IEvent } from "fabric/fabric-impl";
-import { createCircle } from "./createMethods/circle";
-import { createCurve, createImg_mouseup_curve } from "./createMethods/curve";
-import { createTextbox } from "./createMethods/textbox";
-import { createTrap } from "./createMethods/trap";
-import { createRect } from "./createMethods/rect";
+import { useState, useEffect } from 'react';
+import { fabric } from 'fabric';
+import { IEvent } from 'fabric/fabric-impl';
+import { createCircle } from './createMethods/circle';
+import { createCurve, createImg_mouseup_curve } from './createMethods/curve';
+import { createTextbox } from './createMethods/textbox';
+import { createTrap } from './createMethods/trap';
+import { createRect } from './createMethods/rect';
 
 // 是否选中
 var isC: boolean = false;
@@ -35,7 +35,7 @@ const createImg_mousedown: (e: IEvent<Event>) => void = function (
     top: e.absolutePointer?.y,
     left: e.absolutePointer?.x,
   };
-  console.log("createImg_mousedown");
+  console.log('createImg_mousedown');
 };
 
 export const allCreateMethods: {
@@ -70,7 +70,7 @@ const createImg_mouseup: (
   dispatch: Function,
   methodType: string
 ) {
-  console.log("createImg_mouseup");
+  console.log('createImg_mouseup');
   isC = false;
   const newL: Location = {
     top: e.absolutePointer?.y,
@@ -81,16 +81,16 @@ const createImg_mouseup: (
     height: Math.abs(newL.top - location.top),
   };
   switch (methodType) {
-    case "Rect":
+    case 'Rect':
       graphical = new fabric.Rect({
         top: location.top,
         left: location.left,
         width: newL.left - location.left,
         height: newL.top - location.top,
-        fill: "red",
+        fill: 'red',
       });
       break;
-    case "Circle":
+    case 'Circle':
       let circleData;
       if (width > height) {
         circleData = {
@@ -106,11 +106,11 @@ const createImg_mouseup: (
       graphical = new fabric.Circle({
         top: Math.min(location.top, newL.top),
         left: Math.min(location.left, newL.left),
-        fill: "red",
+        fill: 'red',
         ...circleData,
       });
       break;
-    case "Trap":
+    case 'Trap':
       graphical = new fabric.Polygon([
         {
           x: (newL.left + location.left) / 2,
@@ -130,17 +130,17 @@ const createImg_mouseup: (
         },
       ]);
       break;
-    case "Textbox":
-      graphical = new fabric.Textbox("", {
+    case 'Textbox':
+      graphical = new fabric.Textbox('', {
         top: e.absolutePointer?.y,
         left: e.absolutePointer?.x,
-        fill: "black",
+        fill: 'black',
       });
       break;
-    case "Curve":
-      graphical = new fabric.Path("M 65 0 Q", {
-        fill: "",
-        stroke: "black",
+    case 'Curve':
+      graphical = new fabric.Path('M 65 0 Q', {
+        fill: '',
+        stroke: 'black',
         objectCaching: false,
       });
       graphical.path[0][1] = location.left;
@@ -150,11 +150,11 @@ const createImg_mouseup: (
       graphical.path[1][3] = newL.left;
       graphical.path[1][4] = newL.top - height / 2;
       break;
-    case "Cursor":
+    case 'Cursor':
       graphical = new fabric.Object();
   }
-  dispatch({ type: "changeMethod", payload: "Cursor" });
-  dispatch({ type: "addGraphical", payload: graphical });
+  dispatch({ type: 'changeMethod', payload: 'Cursor' });
+  dispatch({ type: 'addGraphical', payload: graphical });
 };
 
 export const useWindowSize = () => {
@@ -171,8 +171,8 @@ export const useWindowSize = () => {
         width: window.innerWidth,
         height: window.innerHeight,
       });
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
   }, []);
 
   return windowSize;
@@ -186,10 +186,10 @@ export const createImg = function (
 ) {
   canvas = canvasFun;
   // 只要花了图形，就一直监听，用来显示曲线的点
-  canvas.on("mouse:move", function (e: IEvent<Event>) {
-    if (e.target?.name == "p0" || e.target?.name == "p2") {
+  canvas.on('mouse:move', function (e: IEvent<Event>) {
+    if (e.target?.name == 'p0' || e.target?.name == 'p2') {
       if (!e.target?.line.selected) {
-        e.target?.animate("opacity", "1", {
+        e.target?.animate('opacity', '1', {
           duration: 200,
           onChange: canvas.renderAll.bind(canvas),
         });
@@ -197,10 +197,10 @@ export const createImg = function (
       }
     }
   });
-  canvas.on("mouse:out", function (e: IEvent<Event>) {
-    if (e.target?.name == "p0" || e.target?.name == "p2") {
+  canvas.on('mouse:out', function (e: IEvent<Event>) {
+    if (e.target?.name == 'p0' || e.target?.name == 'p2') {
       if (!e.target?.line.selected) {
-        e.target?.animate("opacity", "0", {
+        e.target?.animate('opacity', '0', {
           duration: 200,
           onChange: canvas.renderAll.bind(canvas),
         });
@@ -214,31 +214,31 @@ export const createImg = function (
   });
   // 动态初始化
   switch (methodType) {
-    case "Rect":
+    case 'Rect':
       graphical = new fabric.Rect({});
       break;
-    case "Circle":
+    case 'Circle':
       graphical = new fabric.Circle({});
       break;
-    case "Trap":
+    case 'Trap':
       graphical = new fabric.Polygon([]);
       break;
-    case "Textbox":
-      graphical = new fabric.Text("");
-      canvas.on("mouse:down", allCreateMethods[methodType]);
+    case 'Textbox':
+      graphical = new fabric.Text('');
+      canvas.on('mouse:down', allCreateMethods[methodType]);
       return;
-    case "Curve":
-      canvas.on("mouse:down", createImg_mousedown);
-      canvas.on("mouse:move", allCreateMethods[methodType]);
-      canvas.on("mouse:up", (e, canvas, graphical, location) =>
+    case 'Curve':
+      canvas.on('mouse:down', createImg_mousedown);
+      canvas.on('mouse:move', allCreateMethods[methodType]);
+      canvas.on('mouse:up', (e, canvas, graphical, location) =>
         createImg_mouseup_curve(e, canvas, graphical, location)
       );
       return;
   }
   // 交互
-  canvas.on("mouse:down", createImg_mousedown);
-  canvas.on("mouse:move", allCreateMethods[methodType]);
-  canvas.on("mouse:up", (e) => createImg_mouseup(e, dispatch, methodType));
+  canvas.on('mouse:down', createImg_mousedown);
+  canvas.on('mouse:move', allCreateMethods[methodType]);
+  canvas.on('mouse:up', (e) => createImg_mouseup(e, dispatch, methodType));
 };
 
 export const deleteImg = function (
@@ -248,15 +248,15 @@ export const deleteImg = function (
   canvas = canvasFun;
   // 动态撤销事件
   switch (methodType) {
-    case "Textbox":
-      canvas.off("mouse:down", allCreateMethods[methodType]);
-    case "Curve":
-      canvas.off("mouse:down", createImg_mousedown);
-      canvas.off("mouse:move", allCreateMethods[methodType]);
-      canvas.off("mouse:up");
+    case 'Textbox':
+      canvas.off('mouse:down', allCreateMethods[methodType]);
+    case 'Curve':
+      canvas.off('mouse:down', createImg_mousedown);
+      canvas.off('mouse:move', allCreateMethods[methodType]);
+      canvas.off('mouse:up');
     default:
-      canvas.off("mouse:down", createImg_mousedown);
-      canvas.off("mouse:move", allCreateMethods[methodType]);
-      canvas.off("mouse:up");
+      canvas.off('mouse:down', createImg_mousedown);
+      canvas.off('mouse:move', allCreateMethods[methodType]);
+      canvas.off('mouse:up');
   }
 };

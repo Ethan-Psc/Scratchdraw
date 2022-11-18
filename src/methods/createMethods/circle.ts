@@ -1,6 +1,6 @@
-import { fabric } from "fabric";
-import { IEvent } from "fabric/fabric-impl";
-import { Location } from "../index";
+import { fabric } from 'fabric';
+import { IEvent } from 'fabric/fabric-impl';
+import { Location } from '../index';
 export function createCircle(
   e: IEvent<Event>,
   canvas: fabric.Canvas,
@@ -31,7 +31,7 @@ export function createCircle(
   graphical = new fabric.Circle({
     top: Math.min(location.top, newL.top),
     left: Math.min(location.left, newL.left),
-    fill: "red",
+    fill: 'red',
     ...circleData,
   });
   canvas.add(graphical);
