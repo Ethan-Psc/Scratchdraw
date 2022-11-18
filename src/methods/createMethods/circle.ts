@@ -1,10 +1,10 @@
 import { fabric } from 'fabric';
 import { IEvent } from 'fabric/fabric-impl';
-import { Location } from '../index';
+import { Location } from '../../type/type';
+let graphical: fabric.Object;
 export function createCircle(
   e: IEvent<Event>,
   canvas: fabric.Canvas,
-  graphical: fabric.Object,
   location: Location
 ) {
   const newL: Location = {

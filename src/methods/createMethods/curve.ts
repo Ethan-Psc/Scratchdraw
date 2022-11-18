@@ -1,16 +1,17 @@
 import { fabric } from 'fabric';
 import { IEvent } from 'fabric/fabric-impl';
-import { Location } from '../index';
+import { Location } from '../../type/type';
+let graphical: fabric.Object;
 export const createImg_mouseup_curve: (
   e: IEvent<Event>,
   canvas: fabric.Canvas,
-  graphical: fabric.Object,
-  location: Location
+  location: Location,
+  isC: boolean
 ) => void = function (
   e: IEvent<Event>,
   canvas: fabric.Canvas,
-  graphical: fabric.Object,
-  location: Location
+  location: Location,
+  isC: boolean
 ) {
   const newL: Location = {
     top: e.absolutePointer?.y,
@@ -144,7 +145,6 @@ export function onObjectMoving(e: IEvent<Event>) {
 export function createCurve(
   e: IEvent<Event>,
   canvas: fabric.Canvas,
-  graphical: fabric.Object,
   location: Location
 ) {
   const newL: Location = {

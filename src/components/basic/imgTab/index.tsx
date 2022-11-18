@@ -3,15 +3,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import "./index.css";
 export const methodTypeArr = ['Cursor', 'Rect', 'Trap', 'Circle', 'Curve', 'Textbox'];
 export const getMethodType = (e: MouseEvent, dispatch: Function, ulRef: MutableRefObject<null>) => {
-    const methodType = methodTypeArr[parseInt(e.target?.innerText) - 1]
+    const methodType = methodTypeArr[parseInt((e.target as any).innerText) - 1]
     dispatch({ type: 'changeMethod', payload: methodType });
-    for (let i = 0; i < ulRef.current.children.length; i++) {
-        if (ulRef.current.children[i].className.includes('active')
-            && i !== parseInt(e.target?.innerText) - 1) {
-            ulRef.current.children[i].classList.remove('active')
+    for (let i = 0; i < (ulRef.current as any).children.length; i++) {
+        if ((ulRef.current as any).children[i].className.includes('active')
+            && i !== parseInt((e.target as any).innerText) - 1) {
+            (ulRef.current as any).children[i].classList.remove('active')
         }
     }
-    const liRef = ulRef.current.children[parseInt(e.target?.innerText) - 1];
+    const liRef = (ulRef.current as any).children[parseInt((e.target as any).innerText) - 1];
     if (!liRef.className.includes('active')) {
         liRef.classList.add('active');
     }
@@ -21,12 +21,12 @@ export const getMethodType = (e: MouseEvent, dispatch: Function, ulRef: MutableR
     }
 }
 export const methodTypeSync = (ulRef: MutableRefObject<null>) => {
-    for (let i = 0; i < ulRef.current.children.length; i++) {
-        if (ulRef.current.children[i].className.includes('active')) {
-            ulRef.current.children[i].classList.remove('active')
+    for (let i = 0; i < (ulRef.current as any).children.length; i++) {
+        if ((ulRef.current as any).children[i].className.includes('active')) {
+            (ulRef.current as any).children[i].classList.remove('active')
         }
     }
-    ulRef.current.children[0].classList.add('active');
+    (ulRef.current as any).children[0].classList.add('active');
 }
 export const BasicImgTab = () => {
     const [lock, setLock] = useState(false);

@@ -7,7 +7,7 @@ import { createCurve, createImg_mouseup_curve } from './createMethods/curve';
 import { createTextbox } from './createMethods/textbox';
 import { createTrap } from './createMethods/trap';
 import { createRect } from './createMethods/rect';
-
+import { Location } from '../type/type';
 // 是否选中
 var isC: boolean = false;
 // 当前光标位置
@@ -21,19 +21,14 @@ var graphical: fabric.Object;
 var canvas: fabric.Canvas;
 // 位置接口
 
-export interface Location {
-  top: number | undefined;
-  left: number | undefined;
-}
-
 // 记录点击按下时的坐标，准备画图
 const createImg_mousedown: (e: IEvent<Event>) => void = function (
   e: IEvent<Event>
 ) {
   isC = true;
   location = {
-    top: e.absolutePointer?.y,
-    left: e.absolutePointer?.x,
+    top: e.absolutePointer?.y as number,
+    left: e.absolutePointer?.x as number,
   };
   console.log('createImg_mousedown');
 };
@@ -42,19 +37,20 @@ export const allCreateMethods: {
   [index: string]: (e: IEvent<Event>) => void;
 } = {
   Rect: function (e: IEvent<Event>) {
-    isC && createRect(e, canvas, graphical, location);
+    isC && createRect(e, canvas, location);
   },
   Circle: function (e: IEvent<Event>) {
-    isC && createCircle(e, canvas, graphical, location);
-  },
-  Textbox: function (e: IEvent<Event>) {
-    isC && createTextbox(e, canvas, graphical);
+    isC && createCircle(e, canvas, location);
   },
   Trap: function (e: IEvent<Event>) {
-    isC && createTrap(e, canvas, graphical, location);
+    isC && createTrap(e, canvas, location);
+  },
+  Textbox: function (e: IEvent<Event>) {
+    console.log('textbox mousedown')
+    createTextbox(e, canvas);
   },
   Curve: function (e: IEvent<Event>) {
-    isC && createCurve(e, canvas, graphical, location);
+    isC && createCurve(e, canvas, location);
   },
   Cursor: function (e: IEvent<Event>) {
     isC = false;
@@ -77,16 +73,16 @@ const createImg_mouseup: (
     left: e.absolutePointer?.x,
   } as Location;
   const { width, height } = {
-    width: Math.abs(newL.left - location.left),
-    height: Math.abs(newL.top - location.top),
+    width: Math.abs((newL as any).left - (location as any).left),
+    height: Math.abs((newL as any).top - (location as any).top),
   };
   switch (methodType) {
     case 'Rect':
       graphical = new fabric.Rect({
         top: location.top,
         left: location.left,
-        width: newL.left - location.left,
-        height: newL.top - location.top,
+        width: ((newL.left as number) - (location as any).left) as number,
+        height: ((newL.top as number) - (location as any).top) as number,
         fill: 'red',
       });
       break;
@@ -104,8 +100,8 @@ const createImg_mouseup: (
         };
       }
       graphical = new fabric.Circle({
-        top: Math.min(location.top, newL.top),
-        left: Math.min(location.left, newL.left),
+        top: Math.min((location as any).top, newL.top as number),
+        left: Math.min((location as any).left, newL.left as number),
         fill: 'red',
         ...circleData,
       });
@@ -113,24 +109,25 @@ const createImg_mouseup: (
     case 'Trap':
       graphical = new fabric.Polygon([
         {
-          x: (newL.left + location.left) / 2,
-          y: location.top,
+          x: ((newL as any).left + location.left) / 2,
+          y: location.top as number,
         },
         {
-          x: newL.left,
-          y: (newL.top + location.top) / 2,
+          x: newL.left as number,
+          y: ((newL as any).top + location.top) / 2,
         },
         {
-          x: (newL.left + location.left) / 2,
-          y: newL.top,
+          x: ((newL as any).left + location.left) / 2,
+          y: newL.top as number,
         },
         {
-          x: location.left,
-          y: (newL.top + location.top) / 2,
+          x: location.left as number,
+          y: ((newL as any).top + location.top) / 2,
         },
       ]);
       break;
     case 'Textbox':
+      console.log('textbox mouseup')
       graphical = new fabric.Textbox('', {
         top: e.absolutePointer?.y,
         left: e.absolutePointer?.x,
@@ -143,15 +140,18 @@ const createImg_mouseup: (
         stroke: 'black',
         objectCaching: false,
       });
-      graphical.path[0][1] = location.left;
-      graphical.path[0][2] = location.top + height / 2;
-      graphical.path[1][1] = (location.left + newL.left) / 2;
-      graphical.path[1][2] = (location.top + newL.top) / 2;
-      graphical.path[1][3] = newL.left;
-      graphical.path[1][4] = newL.top - height / 2;
+      (graphical as any).path[0][1] = location.left;
+      (graphical as any).path[0][2] = (location.top as number) + height / 2;
+      (graphical as any).path[1][1] =
+        (((location.left as number) + (newL as any).left) as number) / 2;
+      (graphical as any).path[1][2] =
+        (((location.top as number) + (newL as any).top) as number) / 2;
+      (graphical as any).path[1][3] = newL.left;
+      (graphical as any).path[1][4] = (newL as any).top - height / 2;
       break;
     case 'Cursor':
       graphical = new fabric.Object();
+      break;
   }
   dispatch({ type: 'changeMethod', payload: 'Cursor' });
   dispatch({ type: 'addGraphical', payload: graphical });
@@ -185,29 +185,29 @@ export const createImg = function (
   graphicals: Array<any>
 ) {
   canvas = canvasFun;
-  // 只要花了图形，就一直监听，用来显示曲线的点
-  canvas.on('mouse:move', function (e: IEvent<Event>) {
-    if (e.target?.name == 'p0' || e.target?.name == 'p2') {
-      if (!e.target?.line.selected) {
-        e.target?.animate('opacity', '1', {
-          duration: 200,
-          onChange: canvas.renderAll.bind(canvas),
-        });
-        e.target.selectable = true;
-      }
-    }
-  });
-  canvas.on('mouse:out', function (e: IEvent<Event>) {
-    if (e.target?.name == 'p0' || e.target?.name == 'p2') {
-      if (!e.target?.line.selected) {
-        e.target?.animate('opacity', '0', {
-          duration: 200,
-          onChange: canvas.renderAll.bind(canvas),
-        });
-        e.target.selectable = false;
-      }
-    }
-  });
+  // // 只要花了图形，就一直监听，用来显示曲线的点
+  // canvas.on('mouse:move', function (e: IEvent<Event>) {
+  //   if (e.target?.name == 'p0' || e.target?.name == 'p2') {
+  //     if (!(e.target as any).line.selected) {
+  //       e.target?.animate('opacity', '1', {
+  //         duration: 200,
+  //         onChange: canvas.renderAll.bind(canvas),
+  //       });
+  //       e.target.selectable = true;
+  //     }
+  //   }
+  // });
+  // canvas.on('mouse:out', function (e: IEvent<Event>) {
+  //   if (e.target?.name == 'p0' || e.target?.name == 'p2') {
+  //     if (!(e.target as any).line.selected) {
+  //       e.target?.animate('opacity', '0', {
+  //         duration: 200,
+  //         onChange: canvas.renderAll.bind(canvas),
+  //       });
+  //       e.target.selectable = false;
+  //     }
+  //   }
+  // });
   // 同步更新
   graphicals.forEach((graphical) => {
     canvas.add(graphical);
@@ -230,8 +230,8 @@ export const createImg = function (
     case 'Curve':
       canvas.on('mouse:down', createImg_mousedown);
       canvas.on('mouse:move', allCreateMethods[methodType]);
-      canvas.on('mouse:up', (e, canvas, graphical, location) =>
-        createImg_mouseup_curve(e, canvas, graphical, location)
+      canvas.on('mouse:up', (e) =>
+        createImg_mouseup_curve(e, canvas, location, isC)
       );
       return;
   }
