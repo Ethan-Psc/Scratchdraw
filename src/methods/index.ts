@@ -3,23 +3,33 @@ import { useState, useEffect } from 'react';
 import { fabric } from 'fabric';
 import { IEvent } from 'fabric/fabric-impl';
 import { createCircle } from './createMethods/circle';
-import { createCurve, createImg_mouseup_curve } from './createMethods/curve';
+import {
+  createCurve,
+  makeCurvePoint,
+  makeCurveCircle,
+  onObjectSelected,
+  onObjectMoving,
+  onSelectionCleared,
+  onSelectionUpdated,
+} from './createMethods/curve';
 import { createTextbox } from './createMethods/textbox';
 import { createTrap } from './createMethods/trap';
 import { createRect } from './createMethods/rect';
-import { Location } from '../type/type';
+import { Location, CurveObject } from '../type/type';
+
 // 是否选中
-var isC: boolean = false;
+let isC: boolean = false;
 // 当前光标位置
-var location: Location = {
+let location: Location = {
   top: 0,
   left: 0,
 };
 // 画布上的一个图形，全局声明
-var graphical: fabric.Object;
+let graphical: fabric.Object;
 // 画布，全局声明
-var canvas: fabric.Canvas;
-// 位置接口
+let canvas: fabric.Canvas;
+// 曲线队列
+let curveArr: Array<CurveObject> = [];
 
 // 记录点击按下时的坐标，准备画图
 const createImg_mousedown: (e: IEvent<Event>) => void = function (
@@ -46,7 +56,6 @@ export const allCreateMethods: {
     isC && createTrap(e, canvas, location);
   },
   Textbox: function (e: IEvent<Event>) {
-    console.log('textbox mousedown')
     createTextbox(e, canvas);
   },
   Curve: function (e: IEvent<Event>) {
@@ -127,7 +136,7 @@ const createImg_mouseup: (
       ]);
       break;
     case 'Textbox':
-      console.log('textbox mouseup')
+      console.log('textbox mouseup');
       graphical = new fabric.Textbox('', {
         top: e.absolutePointer?.y,
         left: e.absolutePointer?.x,
@@ -135,6 +144,7 @@ const createImg_mouseup: (
       });
       break;
     case 'Curve':
+      console.log('curve mouseup');
       graphical = new fabric.Path('M 65 0 Q', {
         fill: '',
         stroke: 'black',
@@ -155,6 +165,91 @@ const createImg_mouseup: (
   }
   dispatch({ type: 'changeMethod', payload: 'Cursor' });
   dispatch({ type: 'addGraphical', payload: graphical });
+};
+
+const createImg_mouseup_curve: (
+  e: IEvent<Event>,
+  canvas: fabric.Canvas,
+  location: Location,
+  curveArr: Array<CurveObject>,
+  dispatch: Function
+) => void = function (
+  e: IEvent<Event>,
+  canvas: fabric.Canvas,
+  location: Location,
+  curveArr: Array<CurveObject>,
+  dispatch: Function
+) {
+  const newL: Location = {
+    top: e.absolutePointer?.y,
+    left: e.absolutePointer?.x,
+  } as Location;
+  const { width, height } = {
+    width: Math.abs(newL.left - (location as any).left),
+    height: Math.abs(newL.top - (location as any).top),
+  };
+  isC = false;
+  graphical = new fabric.Path('M 65 0 Q', {
+    fill: '',
+    stroke: 'black',
+    objectCaching: false,
+  });
+
+  (graphical as any).path[0][1] = location.left;
+  (graphical as any).path[0][2] = location.top + height / 2;
+
+  (graphical as any).path[1][1] = (location.left + newL.left) / 2;
+  (graphical as any).path[1][2] = (location.top + newL.top) / 2;
+
+  (graphical as any).path[1][3] = newL.left;
+  (graphical as any).path[1][4] = newL.top - height / 2;
+  canvas.add(graphical);
+  fabric.Path.prototype.originX = fabric.Path.prototype.originY = 'center';
+  var p1 = makeCurvePoint(
+    (location.left + newL.left) / 2,
+    (location.top + newL.top) / 2,
+    graphical as fabric.Path
+  );
+  p1.name = Number(new Date()) + '_p1';
+  canvas.add(p1);
+
+  var p0 = makeCurveCircle(
+    location.left,
+    location.top + height / 2,
+    graphical as fabric.Path,
+    p1
+  );
+  p0.name = Number(new Date()) + '_p0';
+
+  canvas.add(p0);
+
+  var p2 = makeCurveCircle(
+    newL.left,
+    newL.top - height / 2,
+    graphical as fabric.Path,
+    p1
+  );
+  p2.name = Number(new Date()) + '_p2';
+  canvas.add(p2);
+
+  curveArr.push({ spot0: p0, spot2: p2, centerSpot: p1 });
+  // 最终确定曲线
+  (graphical as any).selected = true;
+  canvas.add(graphical);
+  dispatch({ type: 'addGraphical', payload: graphical });
+  dispatch({ type: 'addGraphical', payload: p0 });
+  dispatch({ type: 'addGraphical', payload: p1 });
+  dispatch({ type: 'addGraphical', payload: p2 });
+  console.log('dispatch curve');
+  graphical = new fabric.Path('');
+  canvas.on('selection:created', (e) => onObjectSelected(e, canvas, curveArr));
+  canvas.on('object:moving', (e) => onObjectMoving(e, curveArr));
+  canvas.on('selection:cleared', (e) =>
+    onSelectionCleared(e, canvas, curveArr)
+  );
+  canvas.on('selection:updated', (e) =>
+    onSelectionUpdated(e, canvas, curveArr)
+  );
 };
 
 export const useWindowSize = () => {
@@ -185,7 +280,7 @@ export const createImg = function (
   graphicals: Array<any>
 ) {
   canvas = canvasFun;
-  // // 只要花了图形，就一直监听，用来显示曲线的点
+  // 只要花了图形，就一直监听，用来显示曲线的点
   // canvas.on('mouse:move', function (e: IEvent<Event>) {
   //   if (e.target?.name == 'p0' || e.target?.name == 'p2') {
   //     if (!(e.target as any).line.selected) {
@@ -209,6 +304,7 @@ export const createImg = function (
   //   }
   // });
   // 同步更新
+  console.log('update', graphicals);
   graphicals.forEach((graphical) => {
     canvas.add(graphical);
   });
@@ -231,7 +327,7 @@ export const createImg = function (
       canvas.on('mouse:down', createImg_mousedown);
       canvas.on('mouse:move', allCreateMethods[methodType]);
       canvas.on('mouse:up', (e) =>
-        createImg_mouseup_curve(e, canvas, location, isC)
+        createImg_mouseup_curve(e, canvas, location, curveArr, dispatch)
       );
       return;
   }
