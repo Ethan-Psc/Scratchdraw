@@ -153,7 +153,6 @@ export function createCurve(
   canvas: fabric.Canvas,
   location: Location
 ) {
-  console.log('createCurve mousemove');
   const newL: Location = {
     top: e.absolutePointer?.y,
     left: e.absolutePointer?.x,
@@ -172,12 +171,12 @@ export function createCurve(
   });
 
   (graphical as any).path[0][1] = location.left;
-  (graphical as any).path[0][2] = location.top + height / 2;
+  (graphical as any).path[0][2] = location.top;
 
   (graphical as any).path[1][1] = (location.left + newL.left) / 2;
   (graphical as any).path[1][2] = (location.top + newL.top) / 2;
 
   (graphical as any).path[1][3] = newL.left;
-  (graphical as any).path[1][4] = newL.top - height / 2;
+  (graphical as any).path[1][4] = newL.top;
   canvas.add(graphical);
 }

@@ -20,7 +20,7 @@ export const imgTabReducer = (state: any, action: any) => {
   if (action.type === "changeMethod") {
     return { ...state, method: action.payload };
   } else if (action.type === "addGraphical") {
-    const graphicals = _.cloneDeep(state.graphicals);
+    const graphicals = state.graphicals;
     graphicals.push(action.payload);
     return { ...state, graphicals: graphicals };
   } else {

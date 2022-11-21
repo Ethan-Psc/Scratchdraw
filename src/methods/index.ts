@@ -40,7 +40,6 @@ const createImg_mousedown: (e: IEvent<Event>) => void = function (
     top: e.absolutePointer?.y as number,
     left: e.absolutePointer?.x as number,
   };
-  console.log('createImg_mousedown');
 };
 
 export const allCreateMethods: {
@@ -75,7 +74,6 @@ const createImg_mouseup: (
   dispatch: Function,
   methodType: string
 ) {
-  console.log('createImg_mouseup');
   isC = false;
   const newL: Location = {
     top: e.absolutePointer?.y,
@@ -136,28 +134,11 @@ const createImg_mouseup: (
       ]);
       break;
     case 'Textbox':
-      console.log('textbox mouseup');
       graphical = new fabric.Textbox('', {
         top: e.absolutePointer?.y,
         left: e.absolutePointer?.x,
         fill: 'black',
       });
-      break;
-    case 'Curve':
-      console.log('curve mouseup');
-      graphical = new fabric.Path('M 65 0 Q', {
-        fill: '',
-        stroke: 'black',
-        objectCaching: false,
-      });
-      (graphical as any).path[0][1] = location.left;
-      (graphical as any).path[0][2] = (location.top as number) + height / 2;
-      (graphical as any).path[1][1] =
-        (((location.left as number) + (newL as any).left) as number) / 2;
-      (graphical as any).path[1][2] =
-        (((location.top as number) + (newL as any).top) as number) / 2;
-      (graphical as any).path[1][3] = newL.left;
-      (graphical as any).path[1][4] = (newL as any).top - height / 2;
       break;
     case 'Cursor':
       graphical = new fabric.Object();
@@ -196,13 +177,13 @@ const createImg_mouseup_curve: (
   });
 
   (graphical as any).path[0][1] = location.left;
-  (graphical as any).path[0][2] = location.top + height / 2;
+  (graphical as any).path[0][2] = location.top;
 
   (graphical as any).path[1][1] = (location.left + newL.left) / 2;
   (graphical as any).path[1][2] = (location.top + newL.top) / 2;
 
   (graphical as any).path[1][3] = newL.left;
-  (graphical as any).path[1][4] = newL.top - height / 2;
+  (graphical as any).path[1][4] = newL.top;
   canvas.add(graphical);
   fabric.Path.prototype.originX = fabric.Path.prototype.originY = 'center';
   var p1 = makeCurvePoint(
@@ -215,7 +196,7 @@ const createImg_mouseup_curve: (
 
   var p0 = makeCurveCircle(
     location.left,
-    location.top + height / 2,
+    location.top,
     graphical as fabric.Path,
     p1
   );
@@ -223,33 +204,23 @@ const createImg_mouseup_curve: (
 
   canvas.add(p0);
 
-  var p2 = makeCurveCircle(
-    newL.left,
-    newL.top - height / 2,
-    graphical as fabric.Path,
-    p1
-  );
+  var p2 = makeCurveCircle(newL.left, newL.top, graphical as fabric.Path, p1);
   p2.name = Number(new Date()) + '_p2';
   canvas.add(p2);
 
   curveArr.push({ spot0: p0, spot2: p2, centerSpot: p1 });
+
   // 最终确定曲线
   (graphical as any).selected = true;
   canvas.add(graphical);
+  graphical = new fabric.Path('');
+
+  // 同步更新
   dispatch({ type: 'addGraphical', payload: graphical });
   dispatch({ type: 'addGraphical', payload: p0 });
   dispatch({ type: 'addGraphical', payload: p1 });
   dispatch({ type: 'addGraphical', payload: p2 });
-  console.log('dispatch curve');
-  graphical = new fabric.Path('');
-  canvas.on('selection:created', (e) => onObjectSelected(e, canvas, curveArr));
-  canvas.on('object:moving', (e) => onObjectMoving(e, curveArr));
-  canvas.on('selection:cleared', (e) =>
-    onSelectionCleared(e, canvas, curveArr)
-  );
-  canvas.on('selection:updated', (e) =>
-    onSelectionUpdated(e, canvas, curveArr)
-  );
+  dispatch({ type: 'changeMethod', payload: 'Cursor' });
 };
 
 export const useWindowSize = () => {
@@ -281,33 +252,43 @@ export const createImg = function (
 ) {
   canvas = canvasFun;
   // 只要花了图形，就一直监听，用来显示曲线的点
-  // canvas.on('mouse:move', function (e: IEvent<Event>) {
-  //   if (e.target?.name == 'p0' || e.target?.name == 'p2') {
-  //     if (!(e.target as any).line.selected) {
-  //       e.target?.animate('opacity', '1', {
-  //         duration: 200,
-  //         onChange: canvas.renderAll.bind(canvas),
-  //       });
-  //       e.target.selectable = true;
-  //     }
-  //   }
-  // });
-  // canvas.on('mouse:out', function (e: IEvent<Event>) {
-  //   if (e.target?.name == 'p0' || e.target?.name == 'p2') {
-  //     if (!(e.target as any).line.selected) {
-  //       e.target?.animate('opacity', '0', {
-  //         duration: 200,
-  //         onChange: canvas.renderAll.bind(canvas),
-  //       });
-  //       e.target.selectable = false;
-  //     }
-  //   }
-  // });
+  canvas.on('mouse:move', function (e: IEvent<Event>) {
+    if (e.target?.name?.includes('p0') || e.target?.name?.includes('p2')) {
+      if (!(e.target as any).line.selected) {
+        e.target?.animate('opacity', '1', {
+          duration: 200,
+          onChange: canvas.renderAll.bind(canvas),
+        });
+        e.target.selectable = true;
+      }
+    }
+  });
+  canvas.on('mouse:out', function (e: IEvent<Event>) {
+    if (e.target?.name?.includes('p0') || e.target?.name?.includes('p2')) {
+      if (!(e.target as any).line.selected) {
+        e.target?.animate('opacity', '0', {
+          duration: 200,
+          onChange: canvas.renderAll.bind(canvas),
+        });
+        e.target.selectable = false;
+      }
+    }
+  });
+
+  canvas.on('selection:created', (e) => onObjectSelected(e, canvas, curveArr));
+  canvas.on('object:moving', (e) => onObjectMoving(e, curveArr));
+  canvas.on('selection:cleared', (e) =>
+    onSelectionCleared(e, canvas, curveArr)
+  );
+  canvas.on('selection:updated', (e) =>
+    onSelectionUpdated(e, canvas, curveArr)
+  );
+
   // 同步更新
-  console.log('update', graphicals);
   graphicals.forEach((graphical) => {
     canvas.add(graphical);
   });
+
   // 动态初始化
   switch (methodType) {
     case 'Rect':
