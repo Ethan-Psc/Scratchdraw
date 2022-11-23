@@ -1,0 +1,10 @@
+.panel {
+  position: absolute;
+  box-sizing: border-box;
+  top: 8.28rem;
+  left: 0.28rem;
+  width: 16.25rem;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 1%), 1px 1px 5px rgb(0 0 0 / 15%);
+  padding: 0.5rem;
+  display: none;
+}

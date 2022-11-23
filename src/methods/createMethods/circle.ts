@@ -31,7 +31,7 @@ export function createCircle(
   graphical = new fabric.Circle({
     top: Math.min(location.top, newL.top),
     left: Math.min(location.left, newL.left),
-    fill: 'red',
+    fill: 'black',
     ...circleData,
   });
   canvas.add(graphical);

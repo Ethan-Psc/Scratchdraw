@@ -1,0 +1,66 @@
+.island {
+  position: fixed;
+  box-sizing: border-box;
+  top: 0.28rem;
+  left: 0.28rem;
+  width: 16.25rem;
+  height: 6.65rem;
+  padding: 0.5rem;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 1%), 1px 1px 5px rgb(0 0 0 / 15%);
+}
+
+.island-list_horizonal {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.seperation {
+  margin-top: 0.5rem;
+}
+
+.horizon {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.icon {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.icon-list {
+  width: 7.5rem;
+  height: 2.5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.icon:hover {
+  background-color: rgb(105, 101, 219);
+  color: rgb(255, 255, 255);
+  border-radius: 1rem;
+}
+.color-picker {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+.svg {
+  width: 1.8rem;
+  height: 1.8rem;
+  margin: 0.35rem;
+  border: 1px solid rgb(105, 101, 219);
+}
+
+.svgValue {
+  width: 9rem;
+  height: 1.8rem;
+  margin: 0.35rem;
+  text-align: center;
+  line-height: 1.8rem;
+  border: 1px solid rgb(105, 101, 219);
+  font-family: system-ui, BlinkMacSystemFont, -apple-system, Segoe UI;
+}

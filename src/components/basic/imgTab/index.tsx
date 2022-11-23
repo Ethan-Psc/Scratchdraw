@@ -38,7 +38,6 @@ export const BasicImgTab = () => {
             methodTypeSync(ulRef)
         }
     }, [method])
-    console.log('render basicImgTab')
     return (
         <div className='imgTab'>
             <div className='imgTab-list'>

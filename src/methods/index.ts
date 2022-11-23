@@ -90,7 +90,7 @@ const createImg_mouseup: (
         left: location.left,
         width: ((newL.left as number) - (location as any).left) as number,
         height: ((newL.top as number) - (location as any).top) as number,
-        fill: 'red',
+        fill: 'black',
       });
       break;
     case 'Circle':
@@ -109,7 +109,7 @@ const createImg_mouseup: (
       graphical = new fabric.Circle({
         top: Math.min((location as any).top, newL.top as number),
         left: Math.min((location as any).left, newL.left as number),
-        fill: 'red',
+        fill: 'black',
         ...circleData,
       });
       break;
@@ -213,7 +213,6 @@ const createImg_mouseup_curve: (
   // 最终确定曲线
   (graphical as any).selected = true;
   canvas.add(graphical);
-  graphical = new fabric.Path('');
 
   // 同步更新
   dispatch({ type: 'addGraphical', payload: graphical });
@@ -337,3 +336,51 @@ export const deleteImg = function (
       canvas.off('mouse:up');
   }
 };
+
+export function hsvtorgb(h: number, s: number, v: number) {
+  s = s / 100;
+  v = v / 100;
+  let h1 = Math.floor(h / 60) % 6;
+  let f = h / 60 - h1;
+  let p = v * (1 - s);
+  let q = v * (1 - f * s);
+  let t = v * (1 - (1 - f) * s);
+  let r, g, b;
+  switch (h1) {
+    case 0:
+      r = v;
+      g = t;
+      b = p;
+      break;
+    case 1:
+      r = q;
+      g = v;
+      b = p;
+      break;
+    case 2:
+      r = p;
+      g = v;
+      b = t;
+      break;
+    case 3:
+      r = p;
+      g = q;
+      b = v;
+      break;
+    case 4:
+      r = t;
+      g = p;
+      b = v;
+      break;
+    case 5:
+      r = v;
+      g = p;
+      b = q;
+      break;
+    default:
+      r = 0;
+      g = 0;
+      b = 0;
+  }
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}

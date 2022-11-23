@@ -1,23 +1,208 @@
-body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,p,blockquote,th,td { margin:0; padding:0; }
-body { background:#fff; color:#555; font-size:14px; font-family: Verdana, Arial, Helvetica, sans-serif; }
-td,th,caption { font-size:14px; }
-h1, h2, h3, h4, h5, h6 { font-weight:normal; font-size:100%; }
-address, caption, cite, code, dfn, em, strong, th, var { font-style:normal; font-weight:normal;}
-a { color:#555; text-decoration:none; }
-a:hover { text-decoration:underline; }
-img { border:none; }
-ol,ul,li { list-style:none; }
-input, textarea, select, button { font:14px Verdana,Helvetica,Arial,sans-serif; }
-table { border-collapse:collapse; }
-html {overflow-y: scroll;}
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+code,
+form,
+fieldset,
+legend,
+input,
+button,
+textarea,
+p,
+blockquote,
+th,
+td {
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: #fff;
+  color: #555;
+  font-size: 14px;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+td,
+th,
+caption {
+  font-size: 14px;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: normal;
+  font-size: 100%;
+}
+address,
+caption,
+cite,
+code,
+dfn,
+em,
+strong,
+th,
+var {
+  font-style: normal;
+  font-weight: normal;
+}
+a {
+  color: #555;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+img {
+  border: none;
+}
+ol,
+ul,
+li {
+  list-style: none;
+}
+input,
+textarea,
+select,
+button {
+  font: 14px Verdana, Helvetica, Arial, sans-serif;
+}
+table {
+  border-collapse: collapse;
+}
+html {
+  overflow-y: scroll;
+}
 
-.clearfix:after {content: "."; display: block; height:0; clear:both; visibility: hidden;}
-.clearfix { *zoom:1; }
-.Flex{
-	display: flex;
-	display: -webkit-box; 
-	display: -moz-box; 
-	display: -webkit-flex; 
-	display: -moz-flex; 
-	display: -ms-flexbox; 
+.clearfix:after {
+  content: '.';
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.clearfix {
+  *zoom: 1;
+}
+.Flex {
+  display: flex;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+}
+
+/* CDN 服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
+@font-face {
+  font-family: 'iconfont'; /* Project id 3738282 */
+  src: url('//at.alicdn.com/t/c/font_3738282_qwrnfyamfdg.woff2?t=1669089672493')
+      format('woff2'),
+    url('//at.alicdn.com/t/c/font_3738282_qwrnfyamfdg.woff?t=1669089672493')
+      format('woff'),
+    url('//at.alicdn.com/t/c/font_3738282_qwrnfyamfdg.ttf?t=1669089672493')
+      format('truetype');
+}
+
+.iconfont {
+  font-family: 'iconfont' !important;
+  font-size: 1.4rem;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  justify-content: center;
+  line-height: 2.8rem;
+}
+
+.icon-rijianmoshi::before {
+  content: '\e6c7';
+}
+
+.icon-yejianmoshi::before {
+  content: '\e6c1';
+}
+
+.icon-hezuo::before {
+  content: '\e86f';
+}
+
+.icon-tupianwenjian::before {
+  content: '\e674';
+}
+
+.icon-daimawenjian::before {
+  content: '\e604';
+}
+
+.icon-shanchu::before {
+  content: '\e603';
+}
+
+.icon-wenjianjia::before {
+  content: '\e602';
+}
+
+.icon-ziti:before {
+  content: '\e6db';
+}
+
+.icon-pen:before {
+  content: '\e615';
+}
+
+.icon-book-full:before {
+  content: '\e895';
+}
+
+.icon-shubiao:before {
+  content: '\eb9a';
+}
+
+.icon-lingxing:before {
+  content: '\e62d';
+}
+
+.icon-yuanjiao-rect:before {
+  content: '\e64e';
+}
+
+.icon-circle:before {
+  content: '\e64f';
+}
+
+.icon-suoding:before {
+  content: '\e600';
+}
+
+.icon-jiesuo:before {
+  content: '\e601';
+}
+
+.imgTab {
+  width: 100%;
+}
+
+.hover {
+  background-color: rgb(105, 101, 219);
+  color: rgb(255, 255, 255);
+}
+
+.active {
+  background-color: rgb(255, 255, 255);
+  color: rgb(105, 101, 219);
+  border-radius: 2.8rem;
 }

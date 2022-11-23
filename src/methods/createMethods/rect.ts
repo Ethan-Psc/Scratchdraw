@@ -19,7 +19,7 @@ export function createRect(
     left: location.left,
     width: newL.left - location.left,
     height: newL.top - location.top,
-    fill: 'red',
+    fill: 'black',
   });
   console.log(graphical);
   canvas.add(graphical);
