@@ -1,25 +1,26 @@
-import { fabric } from "fabric";
-import { IEvent } from "fabric/fabric-impl";
-import { Location } from "..";
+import { fabric } from 'fabric';
+import { IEvent } from 'fabric/fabric-impl';
+import { Location } from '../../type/type';
+let graphical: fabric.Object;
 export function createRect(
   e: IEvent<Event>,
   canvas: fabric.Canvas,
-  graphical: fabric.Object
+  location: Location
 ) {
+  console.log('createImg mousemove');
   const newL: Location = {
     top: e.absolutePointer?.y,
     left: e.absolutePointer?.x,
   } as Location;
-  console.log("~~~~~~~");
+  console.log(graphical);
   canvas.remove(graphical);
-  console.log(canvas.remove);
   graphical = new fabric.Rect({
     top: location.top,
     left: location.left,
     width: newL.left - location.left,
     height: newL.top - location.top,
-    fill: "red",
+    fill: 'red',
   });
+  console.log(graphical);
   canvas.add(graphical);
-  console.log(canvas.add);
 }

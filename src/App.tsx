@@ -1,9 +1,7 @@
-import { useState } from "react";
-// import {Button} from 'antd';
 import "./App.css";
 import { BasicImgShow } from "./components/basic/imgShow";
 import { BasicImgTab } from './components/basic/imgTab';
-import { UserList } from "./components/demo";
+import { Panel } from "./components/panel";
 import store from './store/index';
 import { Provider } from 'react-redux';
 function App() {
@@ -12,10 +10,9 @@ function App() {
       <Provider store={store}>
         <BasicImgTab></BasicImgTab>
         <BasicImgShow></BasicImgShow>
-        {/* <UserList></UserList> */}
+        <Panel></Panel>
       </Provider>
     </div>
   );
 }
-
 export default App;

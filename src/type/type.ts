@@ -6,6 +6,22 @@ export interface CurveObject{
 }
 
 export interface Location {
-    top: number | undefined,
-    left: number | undefined
+    top: number,
+    left: number,
+}
+
+export enum LineJoin{
+    BEVEL='bevel',
+    ROUND='round',
+    MITER='miter'
+}
+export interface Graphical{
+    fill:string | undefined,
+    borderColor:string | undefined,
+    stroke:string | undefined,
+    strokeWidth:number,
+    strokeDashArray:number[]|undefined,
+    strokeLineJoin:LineJoin,
+    strokeUniform:boolean,
+    moveToFunctionIndex:number
 }
