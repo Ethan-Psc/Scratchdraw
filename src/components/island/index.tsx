@@ -8,13 +8,14 @@ function changeHandler(colors: any) {
 function closeHandler(colors: any) {
     console.log(colors);
 }
-function handleColorPicker(e: any, colorPickerRef: any) {
-    const displayValue = colorPickerRef.current.style.display;
-    colorPickerRef.current.style.display = displayValue === 'none' ? 'block' : 'none';
-}
+
 export const Island = () => {
     const [svgValue, setSvgValue] = useState('');
     const colorPickerRef = useRef(null);
+    const handleColorPicker = (color: any) => {
+        setSvgValue(color);
+        console.log('handleColorPicker')
+    }
     return (
         <div className="island">
             <div className="island-list_horizonal">
@@ -37,7 +38,10 @@ export const Island = () => {
                 </div>
             </div>
             <div className="island-list_horizonal seperation">
-                <div className="color-picker" onClick={(e) => handleColorPicker(e, colorPickerRef)}>
+                <div className="color-picker" onClick={(e) => {
+                    console.log(colorPickerRef.current.style.display)
+                    colorPickerRef.current.style.display = colorPickerRef.current.style.display === 'none' ? 'block' : 'none';
+                }}>
                     <svg className="svg"></svg>
                     <div className="svgValue">{svgValue}</div>
                 </div>

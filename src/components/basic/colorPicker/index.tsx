@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, forwardRef } from "react";
 import "./index.css";
 import { hsvtorgb } from '../../../methods/index';
 import { Button } from 'antd'
@@ -13,7 +13,7 @@ function setHSV(Hval: number, Sval: number, Vval: number, colorTitleEl: any, col
     colorShowEl.style.background = color;
 }
 
-export const BasicColorPicker = (clickHandler: any) => {
+export const BasicColorPicker = (props: any) => {
     const rectRef = useRef(null);
     const svRectRef = useRef(null);
     const slideRef = useRef(null);
@@ -116,10 +116,13 @@ export const BasicColorPicker = (clickHandler: any) => {
                 <h2 ref={colorTitleRef} className="title">rgb(255, 0, 0)</h2>
                 <Button className="button" onClick={(e) => {
                     setIsShow(false);
-                    clickHandler(e, colorTitleRef.current.innerText)
+                    props.clickHandler(`rgb(${hsvtorgb(Hval, Sval, Vval).join(',')})`)
                 }}>确定</Button>
             </div>
         </div>
     )
 }
 
+export const ColorPicker = forwardRef((props, ref) => (
+    <BasicColorPicker ref={ref}>{props.children}</BasicColorPicker>
+));

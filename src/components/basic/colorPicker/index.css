@@ -28,7 +28,7 @@ svg {
 .slide {
   position: absolute;
   left: 13.375rem;
-  top: -0.5rem;
+  top: 0rem;
   border: 8px solid transparent;
   border-right-color: #888;
   width: 0;
@@ -39,7 +39,7 @@ svg {
 .svSlide {
   position: absolute;
   left: 0.25rem;
-  top: -0.5rem;
+  top: 0rem;
   border: 0.25rem solid #888;
   width: 0.5rem;
   height: 0.5rem;
